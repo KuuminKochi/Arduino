@@ -2,10 +2,12 @@
 
 LiquidCrystal_I2C lcd(0x27, 16, 2); // I2C address 0x27, 16 column and 2 rows
 
+// ------------------------------------
+// CUSTOM BYTE THINGS
+
 byte cirnoEye[8] = {
   0b00000,
-  0b11111
-  ,
+  0b11111,
   0b11111,
   0b11111,
   0b11111,
@@ -25,24 +27,50 @@ byte cirnoMouth[8] = {
   0b00100
 };
 
+
+// --------------------------------------
+
+// DETECTS RED BLUE BUTTON ON/OFF 
 int redButton = 0;
 int blueButton = 0;
 
+// RED BLUE SCORE
 int redScore = 0;
 int blueScore = 0;
-  
+
+// RED PINS
+int redLED1 = 2;
+int redLED2 = 3;
+int redLED3 = 4;
+int redLED4 = 5;
+
+// BLUE PINS
+int blueLED1 = 6;
+int blueLED2 = 7;
+int blueLED3 = 8;
+int blueLED4 = 9;
+
+// RED BLUE IN
+int redButtonPin = 10;
+int blueButtonPin = 11;
+
+
+// POWER SOURCE
+int outPin = 12;
+
 void setup(){
-  lcd.init(); // initialize the lcd
-  lcd.backlight();
+  lcd.init(); // INITIALISE LCD SCREEN
+  lcd.backlight(); // ACTIVATE BACKLIGHT
 
-  lcd.createChar(0, cirnoEye);
-  lcd.createChar(1, cirnoMouth);
+  lcd.createChar(0, cirnoEye); // INITIALIZE CIRNO'S EYES
+  lcd.createChar(1, cirnoMouth); // INITIALIZE CIRNO'S MOUTH
   
-  lcd.setCursor(0, 0);         // move cursor to   (0, 0)
-  lcd.print("'Funky Time!'");        // print message at (0, 0)
-  lcd.setCursor(2, 1);         // move cursor to   (2, 1)
-  lcd.print("   -Cirno 1984"); // print message at (2, 1)
+  lcd.setCursor(0, 0);         // MOVE TO (0, 0)
+  lcd.print("'V2 Time!'");  // PRINT TEXT AT (0, 0)
+  lcd.setCursor(2, 1);         // MOVE TO (2, 1)
+  lcd.print("   -Nitori 1984"); // PRINT TEXT AT (2, 1)
 
+  // DRAW CIRNO FACE
   lcd.setCursor(1, 1);
   lcd.write((byte)0);
   lcd.setCursor(3, 1);
@@ -50,20 +78,21 @@ void setup(){
   lcd.setCursor(2, 1);
   lcd.write((byte)1);
 
-  pinMode(2, OUTPUT);
-  pinMode(3, OUTPUT);
-  pinMode(4, OUTPUT);
-  pinMode(5, OUTPUT);
+  
+  pinMode(redLED1, OUTPUT);
+  pinMode(redLED2, OUTPUT);
+  pinMode(redLED3, OUTPUT);
+  pinMode(redLED4, OUTPUT);
 
-  pinMode(8, OUTPUT);
-  pinMode(9, OUTPUT);
-  pinMode(10, OUTPUT);
-  pinMode(11, OUTPUT);
+  pinMode(blueLED1, OUTPUT);
+  pinMode(blueLED2, OUTPUT);
+  pinMode(blueLED3, OUTPUT);
+  pinMode(blueLED4, OUTPUT);
 
-  pinMode(12, INPUT); // RED
-  pinMode(13, INPUT); // BLUE
+  pinMode(redButtonPin, INPUT); // RED
+  pinMode(blueButtonPin, INPUT); // BLUE
 
-  pinMode(7, OUTPUT); // RED
+  pinMode(outPin, OUTPUT); //  RED
 
   Serial.begin(9600); // open the serial port at 9600 bps:
 
@@ -73,7 +102,7 @@ void loop(){
 
   digitalWrite(7, HIGH);
 
-  delay(1000);
+  delay(500);
   lcd.init();
 
   lcd.setCursor(0, 0);
@@ -82,43 +111,33 @@ void loop(){
   lcd.print("BLU: ");
   
   while (true) {
-    for (int i = 6; i > 1; i--) {
+    for (int i = 5; i > 1; i--) {
 
-      redButton = digitalRead(12);
-      blueButton = digitalRead(13);
+      redButton = digitalRead(redButtonPin);
+      blueButton = digitalRead(blueButtonPin);
       
       digitalWrite(i, HIGH);
-      
-      redButton = digitalRead(12);
-      blueButton = digitalRead(13);
-      
-      digitalWrite((i + 6), HIGH);
-      
-      redButton = digitalRead(12);
-      blueButton = digitalRead(13);
-      
+      digitalWrite((i + 4), HIGH);
+
       delay(100);
-      
-      redButton = digitalRead(12);
-      blueButton = digitalRead(13);
+
+      redButton = digitalRead(redButtonPin);
+      blueButton = digitalRead(blueButtonPin);
       
       digitalWrite(i, LOW);
+      digitalWrite((i + 4), LOW);
       
-      redButton = digitalRead(12);
-      blueButton = digitalRead(13);
-      digitalWrite((i + 6), LOW);
-      
-      redButton = digitalRead(12);
-      blueButton = digitalRead(13);
+      redButton = digitalRead(redButtonPin);
+      blueButton = digitalRead(blueButtonPin);
 
-      if ((i + 6) == 8 && blueButton == LOW){
+      if ((i + 4) == 9 && blueButton == LOW){
         blueScore++;
         lcd.setCursor(0, 1);
         lcd.print("BLU: ");
         lcd.print(blueScore);
       }
 
-      if (i == 2 && redButton == LOW){
+      if (i + 0 == 5 && redButton == LOW){
         redScore++;
         lcd.setCursor(0, 0);
         lcd.print("RED: ");
